@@ -1,0 +1,5 @@
+{
+    "name": "drupal/upchuk_paragraphs",
+    "type": "drupal-module",
+    "description": "Integrates with Paragraphs."
+}
