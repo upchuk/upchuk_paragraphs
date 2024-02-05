@@ -1,0 +1,47 @@
+<?php
+
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\WidgetBase;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\paragraphs\ParagraphInterface;
+use Drupal\paragraphs\Plugin\Field\FieldWidget\ParagraphsWidget;
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function upchuk_paragraphs_entity_base_field_info(\Drupal\Core\Entity\EntityTypeInterface $entity_type) {
+  if ($entity_type->id() == 'paragraph') {
+    $fields = [];
+    $fields['administrative_title'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Administrative title'))
+      ->setDescription(t('A paragraph title used in the backend for administrative purposes..'))
+      ->setRevisionable(TRUE)
+      ->setDisplayConfigurable('form', TRUE);
+
+    return $fields;
+  }
+}
+
+/**
+ * Implements hook_field_widget_single_element_form_alter().
+ */
+function upchuk_paragraphs_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
+  $widget = $context['widget'];
+  if (!$widget instanceof ParagraphsWidget) {
+    return;
+  }
+
+  $widget_state = WidgetBase::getWidgetState($element['#field_parents'], $context['items']->getFieldDefinition()->getName(), $form_state);
+  $paragraphs_entity = $widget_state['paragraphs'][$context['delta']]['entity'];
+  if (!$paragraphs_entity instanceof ParagraphInterface || $paragraphs_entity->get('administrative_title')->isEmpty()) {
+    return;
+  }
+
+  if (!isset($element['top']['summary']['fields_info']['#summary'])) {
+    return;
+  }
+
+  $element['top']['summary']['fields_info']['#summary']['content'] = [
+    $paragraphs_entity->get('administrative_title')->value,
+  ];
+}

@@ -1,0 +1,7 @@
+name: Upchuk Paragraphs
+description: Handles some specific paragraphs features
+type: module
+core_version_requirement: ^10
+package: Custom
+dependencies:
+  - paragraphs:paragraphs
